@@ -74,6 +74,8 @@ class EngineTests(unittest.TestCase):
         r = make((100, 100), start="2026-10-05T23:30")
         self.assertEqual(len(r["days"]), 2)
         self.assertAlmostEqual(sum(d["miles"] for d in r["days"]), 200)
+        continued = r["days"][1]["segments"][0]
+        self.assertAlmostEqual(continued["mile_start"], 25)
         self.assert_valid(r)
 
     def test_fuel_and_long_trip_invariants(self):

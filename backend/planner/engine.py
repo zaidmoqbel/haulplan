@@ -95,7 +95,9 @@ def plan_trip(legs, cycle_used, start):
             if cursor < a:
                 segments.append({"start": cursor - lower, "end": a - lower, "status": "off_duty", "label": "Assumed off duty before departure", "miles": 0, "kind": "padding", "mile_start": 0, "mile_end": 0, "leg": 0})
             segments.append({**event, "start": a - lower, "end": b - lower,
-                             "miles": event["miles"] * (b - a) / (event["end"] - event["start"])})
+                             "miles": event["miles"] * (b - a) / (event["end"] - event["start"]),
+                             "mile_start": event["mile_start"] + event["miles"] * (a - event["start"]) / (event["end"] - event["start"]),
+                             "mile_end": event["mile_start"] + event["miles"] * (b - event["start"]) / (event["end"] - event["start"])})
             cursor = b
         if cursor < upper:
             segments.append({"start": cursor - lower, "end": 1440, "status": "off_duty", "label": "Planned off duty after delivery", "miles": 0, "kind": "padding", "mile_start": distance, "mile_end": distance, "leg": 1})
