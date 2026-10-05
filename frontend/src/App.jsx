@@ -150,6 +150,31 @@ export default function App() {
     setTab("logs");
     setTimeout(() => window.print(), 100);
   };
+  const downloadPdf = async () => {
+    setError("");
+    try {
+      const csrfResponse = await fetch("/api/csrf/");
+      if (!csrfResponse.ok) throw new Error("The PDF service is unavailable.");
+      const { token } = await csrfResponse.json();
+      const response = await fetch("/api/plan/pdf/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": token },
+        body: JSON.stringify(plan.input),
+      });
+      if (!response.ok) {
+        const failure = await response.json();
+        throw new Error(failure.error || "The PDF could not be generated.");
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `haulplan-logs-${plan.base_date}.pdf`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (failure) {
+      setError(failure.message);
+    }
+  };
   return (
     <div className="app-shell">
       <aside className={`sidebar ${mobileNav ? "nav-open" : ""}`}>
@@ -488,8 +513,14 @@ export default function App() {
                             <ChevronRight size={18} />
                           </button>
                         </div>
+                        <button
+                          className="button secondary"
+                          onClick={downloadPdf}
+                        >
+                          <Download size={15} /> Download logs PDF
+                        </button>
                         <button className="button secondary" onClick={print}>
-                          <Printer size={15} /> Print all logs / PDF
+                          <Printer size={15} /> Print
                         </button>
                       </div>
                       {plan.days.map((d, i) => (

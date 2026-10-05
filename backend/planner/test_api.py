@@ -16,6 +16,18 @@ class ApiTests(SimpleTestCase):
         self.assertGreater(len(body["route"]["geometry"]), 50)
         self.assertTrue(all("coordinate" in e for e in body["events"]))
 
+    def test_downloadable_pdf_contains_one_sheet_per_day(self):
+        from pypdf import PdfReader
+        from io import BytesIO
+        response = self.client.post("/api/plan/pdf/", self.data, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        content = b"".join(response.streaming_content)
+        self.assertTrue(content.startswith(b"%PDF"))
+        reader = PdfReader(BytesIO(content))
+        self.assertEqual(len(reader.pages), 2)
+        self.assertIn("Driver's daily log", reader.pages[0].extract_text())
+        self.assertIn("24:00", reader.pages[1].extract_text())
+
     def test_bad_inputs(self):
         for patch_data in ({"cycle_used": "nan"}, {"cycle_used": True}, {"cycle_used": -1}, {"cycle_used": 71}, {"current": ""}, {"start": None}, {"start": "invalid"}, {"sample": "false"}):
             response = self.client.post("/api/plan/", {**self.data, **patch_data}, content_type="application/json")

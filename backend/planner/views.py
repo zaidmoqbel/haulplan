@@ -6,6 +6,7 @@ from django.http import FileResponse, JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_GET, require_POST
 from .engine import plan_trip
+from .pdf import create_logs_pdf
 from .providers import geocode, get_route, attach_locations, SAMPLE_PLACES, ProviderError
 
 
@@ -53,8 +54,7 @@ def validate(data):
     return data
 
 
-@require_POST
-def plan(request):
+def build_plan(request):
     if request.content_type != "application/json":
         return JsonResponse({"error": "Use application/json."}, status=415)
     try:
@@ -65,8 +65,24 @@ def plan(request):
         result = plan_trip(route["legs"], data["cycle_used"], data["start"])
         attach_locations(result, route, places)
         result.update({"places": places, "route": route, "input": data})
-        return JsonResponse(result)
+        return result
     except (ValueError, TypeError, UnicodeDecodeError) as exc:
         return JsonResponse({"error": str(exc) if not isinstance(exc, json.JSONDecodeError) else "Invalid JSON."}, status=400)
     except ProviderError as exc:
         return JsonResponse({"error": str(exc)}, status=502)
+
+
+@require_POST
+def plan(request):
+    result = build_plan(request)
+    return result if isinstance(result, JsonResponse) else JsonResponse(result)
+
+
+@require_POST
+def plan_pdf(request):
+    result = build_plan(request)
+    if isinstance(result, JsonResponse):
+        return result
+    response = FileResponse(create_logs_pdf(result), content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="haulplan-logs-{result["base_date"]}.pdf"'
+    return response

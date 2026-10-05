@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: haulplan
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health/
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: MAP_USER_AGENT
+        sync: false

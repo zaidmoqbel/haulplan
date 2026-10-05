@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+ON_RENDER = os.environ.get("RENDER") == "true"
+if ON_RENDER and not os.environ.get("DJANGO_SECRET_KEY"):
+    raise RuntimeError("Set DJANGO_SECRET_KEY before starting the public service.")
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "local-development-only-haulplan-change-before-hosting")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",")
@@ -11,6 +14,13 @@ MIDDLEWARE = ["django.middleware.security.SecurityMiddleware", "django.middlewar
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.filebased.FileBasedCache", "LOCATION": BASE_DIR / ".cache", "TIMEOUT": 86400, "OPTIONS": {"MAX_ENTRIES": 2000}}}
 DATA_UPLOAD_MAX_MEMORY_SIZE = 16384
 CSRF_TRUSTED_ORIGINS = [s for s in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if s]
+RENDER_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if ON_RENDER and RENDER_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_HOSTNAME}")
+CSRF_COOKIE_SECURE = ON_RENDER
+SESSION_COOKIE_SECURE = ON_RENDER
+SECURE_HSTS_SECONDS = 3600 if ON_RENDER else 0
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 USE_TZ = True

@@ -1,10 +1,10 @@
 # Verification results
 
-Verified locally on October 5, 2026.
+Verified locally on October 5–6, 2026.
 
 ## Automated checks
 
-- Django test runner: 13 tests passed. Engine tests exercise multiple distances and cycle balances, including 6,000-mile trips, 69.9/70 used hours, zero-mile legs, midnight crossings, fuel intervals, loading as a qualifying break and 24-hour totals.
+- Django test runner: 16 tests passed. Engine tests exercise multiple distances and cycle balances, including 6,000-mile trips, 69.9/70 used hours, zero-mile legs, midnight crossings, fuel intervals, loading as a qualifying break and 24-hour totals.
 - API tests passed for the saved real route, invalid JSON and inputs, allowed methods/content type, explicit upstream failure, and CSRF enforcement.
 - Mutation check: permitting 661 driving minutes instead of 660 caused three engine tests to fail. The original rule was restored, and all tests passed again.
 - Django system checks passed with no reported issues.
@@ -19,9 +19,10 @@ Verified locally on October 5, 2026.
 - Verified JSON export downloaded an actual 631,473-byte JSON file; its contents include the plan, route and two daily sheets.
 - Inspected the desktop and mobile interface. No document-level horizontal overflow at widths 320, 768, 1024 and 1440 pixels.
 - Browser error/warning log was empty after the final rebuild.
+- Direct PDF export returned a valid two-page PDF for the saved trip. Both pages were rendered to PNG and inspected for clipped content, status lines, remarks, totals and signature space.
 
 ## Limits of verification
 
-The print action was exercised without a JavaScript error, and the on-screen log layout was inspected. The embedded browser did not expose a native print dialog, so final printer/PDF pagination has not been independently verified. Use Chrome/Edge's print dialog to save the logs as PDF. The Docker deployment and any public hosting environment have not been run here.
+The print action was exercised without a JavaScript error, and the on-screen log layout was inspected. The embedded browser did not expose a native print dialog, so browser print pagination remains unverified. Use the separately verified Download logs PDF action for reliable pagination. The Docker deployment and any public hosting environment have not been run here.
 
 These tests verify the implemented conservative planning model; they do not establish FMCSA certification or validate actual parking/fuel facilities, truck restrictions, historical cycle recaps or daylight-saving changes.

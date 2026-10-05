@@ -31,7 +31,7 @@ Build before starting the server: WhiteNoise discovers the built assets at start
 1. Enter three US cities or addresses, cycle hours used (0–70), and departure time.
 2. Open Log & clock details to select the home-terminal offset and optionally fill driver, carrier, vehicle and shipment information.
 3. Generate trip. Review the returned location names, route, estimated arrival and stop timeline.
-4. Choose Daily logs and switch between dates. Print all logs / PDF opens the browser print dialog; choose Save as PDF for a file. Every day includes a full 24-hour graph, status totals, remarks and mileage.
+4. Choose Daily logs and switch between dates. Download logs PDF creates a PDF with one page per day. Print opens the browser print dialog. Every day includes a full 24-hour graph, status totals, remarks and mileage.
 5. Export trip downloads the full JSON plan, including geometry, directions, events, logs and the original inputs.
 
 ## Scheduling model
@@ -75,20 +75,20 @@ npm run format:check
 - `docs/WALKTHROUGH.md`: a 3–5 minute recording script.
 - `docs/VERIFICATION.md`: test results and known limits.
 
-The API exposes GET `/api/health/`, GET `/api/csrf/` and POST `/api/plan/`. POST requires a same-origin CSRF token. It accepts `current`, `pickup`, `dropoff`, `cycle_used`, `start` (`YYYY-MM-DDTHH:MM`), optional log fields, and an explicit `sample` boolean. A sample request always uses the three documented example cities. Successful responses contain `summary`, `events`, `days`, `route`, `places`, `input`, `departure` and `arrival`. Input errors return 400; provider failures return 502.
+The API exposes GET `/api/health/`, GET `/api/csrf/` and POST `/api/plan/` and POST `/api/plan/pdf/`. POST requires a same-origin CSRF token. It accepts `current`, `pickup`, `dropoff`, `cycle_used`, `start` (`YYYY-MM-DDTHH:MM`), optional log fields, and an explicit `sample` boolean. A sample request always uses the three documented example cities. Successful responses contain `summary`, `events`, `days`, `route`, `places`, `input`, `departure` and `arrival`. Input errors return 400; provider failures return 502.
 
 ## Deployment
 
-The included Dockerfile builds React and serves it with Django/WhiteNoise through Waitress on a single origin. No database is needed. Set `HOST=0.0.0.0`, `PORT` to the platform's assigned port, `DJANGO_SECRET_KEY` to a random secret, `DJANGO_ALLOWED_HOSTS` to the exact public hostname and `CSRF_TRUSTED_ORIGINS` to its HTTPS origin. Environment variables are read from the process; `.env.example` is a reference, not an automatically loaded file.
+The included Dockerfile builds React and serves it with Django/WhiteNoise through Waitress on a single origin. No database is needed. `render.yaml` defines a Render Blueprint with a generated Django secret, health check and free web service. On Render, the service hostname is added to Django's allowed hosts and CSRF origins automatically. Set `MAP_USER_AGENT` to an identifiable value with a contact URL when creating the Blueprint. Environment variables are read from the process; `.env.example` is a reference, not an automatically loaded file.
 
 ```sh
 docker build -t haulplan .
 docker run --rm -p 8000:8000 --env-file .env haulplan
 ```
 
-Use any container host with HTTPS termination and persistent cache storage if desired. The Docker build has not been exercised in this environment. A public deployment should include request throttling at the hosting edge, provider capacity planning and HTTPS cookie settings. For Vercel, host the React build there and deploy Django separately; configure an `/api` reverse proxy so the browser continues to use one origin. The single-container setup is simpler.
+Use any container host with HTTPS termination and persistent cache storage if desired. The Docker build has not been exercised in this environment. A public deployment should include request throttling at the hosting edge and provider capacity planning. For Vercel, host the React build there and deploy Django separately; configure an `/api` reverse proxy so the browser continues to use one origin.
 
-No GitHub repository, hosting account or Loom recording has been published automatically. Push the included source to the selected repository and deploy only after choosing the destination.
+The GitHub Actions workflow checks backend tests and the frontend build on pushes and pull requests. A GitHub repository, Render service and Loom recording require access to the corresponding signed-in accounts.
 
 ## References
 

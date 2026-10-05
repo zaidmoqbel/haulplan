@@ -16,7 +16,7 @@ Generate a route. Point out the resolved city names and total mileage. Pan or zo
 
 ## 1:30–2:15 — Logs and export
 
-Open Daily logs, switch to day two and point to the graph, four status totals, mileage and activity remarks. Explain off-duty padding and the use of one terminal clock across time zones. Show Print all logs / PDF and JSON export.
+Open Daily logs, switch to day two and point to the graph, four status totals, mileage and activity remarks. Explain off-duty padding and the use of one terminal clock across time zones. Download logs PDF and open the two-page file; also show the browser Print action and JSON export.
 
 “These are planned records. Actual locations, duty changes and a driver signature must be verified. I don't label every rest as sleeper berth because the video explains that sleeper berth is a physical location.”
 
