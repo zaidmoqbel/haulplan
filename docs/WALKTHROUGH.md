@@ -34,4 +34,4 @@ Run `python manage.py test planner -v 2`. Show tests for breaks, midnight, cycle
 
 “The 55 mph planning floor slows down optimistic travel estimates. This is an assessment planner, with clear limits: no truck restriction database, rolling recap history or automatic DST transitions. Next production steps would be a truck routing provider, actual rest-area selection and complete duty-history input.”
 
-Finish on the route overview. Add the actual public URL and repository URL only after those are published.
+Finish on the route overview. Show the live app at https://haulplan.onrender.com/ and the source at https://github.com/zaidmoqbel/haulplan.

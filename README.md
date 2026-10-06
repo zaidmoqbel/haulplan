@@ -2,6 +2,9 @@
 
 A Django + React trip planner that turns current location, pickup, delivery and used cycle hours into a road route, driving/rest schedule and printable daily log sheets.
 
+**Live app:** https://haulplan.onrender.com/  
+**Source:** https://github.com/zaidmoqbel/haulplan
+
 ## Run locally
 
 Requires Python 3.11+ and Node.js 20.19+ or 22+. On Windows, open PowerShell in this directory:
@@ -88,7 +91,7 @@ docker run --rm -p 8000:8000 --env-file .env haulplan
 
 Use any container host with HTTPS termination and persistent cache storage if desired. The Docker build has not been exercised in this environment. A public deployment should include request throttling at the hosting edge and provider capacity planning. For Vercel, host the React build there and deploy Django separately; configure an `/api` reverse proxy so the browser continues to use one origin.
 
-The GitHub Actions workflow checks backend tests and the frontend build on pushes and pull requests. A GitHub repository, Render service and Loom recording require access to the corresponding signed-in accounts.
+The GitHub Actions workflow checks backend tests and the frontend build on pushes and pull requests. The app is deployed from this repository to Render's free Docker web service. The free service may take extra time to respond after inactivity. A Loom walkthrough recording remains to be created.
 
 ## References
 
